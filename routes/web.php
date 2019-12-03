@@ -11,4 +11,9 @@
 |
 */
 
+Route::prefix('/')->group(function () {
+  Route::post('login', function () {return response('', 204);});
+  Route::get('mac', function () {dd(shell_exec('getmac'));});
+});
+
 Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
