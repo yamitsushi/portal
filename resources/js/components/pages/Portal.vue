@@ -55,6 +55,9 @@
 
 <script>
   export default {
+    created () {
+      console.log('test');
+    },
     mounted () {
       this.$store.commit('isLoading', false);
     }
