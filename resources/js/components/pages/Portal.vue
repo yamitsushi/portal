@@ -26,24 +26,23 @@
               <v-card-text>
                 <v-form>
                   <v-text-field
-                    label="Login"
-                    name="login"
-                    prepend-icon="person"
+                    label="Total Amount"
+                    name="amount"
                     type="text"
+                    :value="pulse"
                   />
 
                   <v-text-field
-                    id="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    type="password"
+                    label="Time Equivalent"
+                    name="time"
+                    type="text"
+                    :value="time"
                   />
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn color="primary">Register</v-btn>
+                <v-btn color="primary" v-on:click="rent">Register</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -55,11 +54,36 @@
 
 <script>
   export default {
+    data() {
+      return {
+        test:'test'
+      }
+    },
+    computed: {
+        pulse() { return this.$store.getters.amount; },
+        time() { return this.$store.getters.time }
+    },
     created () {
-      console.log('test');
+      Echo.channel('portal')
+        .listen('PulseMessage', (e) => {
+            this.$store.commit('pulseIncrement');
+        });
     },
     mounted () {
       this.$store.commit('isLoading', false);
+      console.log(this.test);
+    },
+    methods: {
+      rent: function () {
+        this.$store.commit('isLoading', true);
+        axios.post('./login', {
+          timer: this.$store.getters.amount
+        }).then((response) => {
+          console.log(response);
+        }).catch((error) => {
+          console.log(error);
+        });
+      }
     }
   }
 </script>

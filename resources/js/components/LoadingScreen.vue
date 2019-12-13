@@ -1,14 +1,5 @@
 <template>
   <div class="text-center">
-    <v-btn
-      :disabled="dialog"
-      :loading="dialog"
-      class="white--text"
-      color="purple darken-2"
-      @click="dialog = true"
-    >
-      Start loading
-    </v-btn>
     <v-dialog
       v-model="dialog"
       hide-overlay
