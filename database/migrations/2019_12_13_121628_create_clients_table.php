@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,8 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->macAddress('mac')->unique();
-            $table->integer('time');
+            $table->integer('time')->default(0);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }
