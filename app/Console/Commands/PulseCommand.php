@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-//use App\Jobs\ProcessPulse;
 use App\Events\PulseMessage;
 
 class PulseCommand extends Command
@@ -40,7 +39,6 @@ class PulseCommand extends Command
     public function handle()
     {
         event(new PulseMessage());
-        //ProcessPulse::dispatchNow();
         $this->line('Pulse Send');
     }
 }
