@@ -20,15 +20,6 @@ Route::prefix('/')->group(function () {
     $lines=explode(" ", exec($arp));
     dd($lines[3]);
   });
-  Route::get('check', function() {
-    $response = $pusher->get( '/channels/pulse/users' );
-if( $response[ 'status'] == 200 ) {
-  // convert to associative array for easier consumption
-  $users = json_decode( $response[ 'body' ], true )[ 'users' ];
-}
-
-dd(count($users));
-  });
+Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
 });
 
-Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
