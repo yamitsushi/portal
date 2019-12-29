@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\PulseCommand::class
+        Commands\PulseCommand::class,
+        Commands\EnableCommand::class,
+        Commands\DisableCommand::class
     ];
 
     /**
