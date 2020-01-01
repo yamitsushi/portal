@@ -15,7 +15,7 @@ sudo apt-get upgrade -y
 ```
 - install required library
 ```
-sudo apt-get install hostapd dnsmasq composer git php7.3 php7.3-bcmath php7.3-common php7.3-json php7.3-mbstring php7.3-xml -y
+sudo apt-get install hostapd dnsmasq composer git php7.3 php7.3-bcmath php7.3-common php7.3-json php7.3-mbstring php7.3-xml php7.3-curl -y
 ```
 - add following line at the bottom of  /etc/dhcpcd.conf
 ```
@@ -82,6 +82,49 @@ sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
 - add the folowing line just above 'exit 0' in /etc/rc.local
 ```
 iptables-restore < /etc/iptables.ipv4.nat
+```
+
+- clone this repository in /var/www/
+
+- run this command inside the portal
+```
+composer install
+cp .env.example .env
+composer install
+php artisan key:generate
+touch database/database.sqlite
+chmod -R 777 storage
+```
+
+- create file at /etc/apache2/sites-available/laravel.conf with the following content
+```
+<VirtualHost *:80>
+    ServerName portal.com
+
+    ServerAdmin webmaster@portal.com
+    DocumentRoot /var/www/portal/public
+
+    <Directory /var/www/portal>
+        AllowOverride All
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+- run this command
+```
+sudo a2dissite 000-default.conf
+sudo a2ensite laravel.conf
+sudo a2enmod rewrite
+sudo service apache2 restart
+```
+
+- update .env with prefered data
+```
+APP_ENV=prod
+APP_URL=http://portal.com
 ```
 
 # To be Continued
