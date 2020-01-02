@@ -12,14 +12,11 @@
 */
 
 Route::prefix('/')->group(function () {
-  Route::post('tag', 'PortalController@tag');
-  //Route::post('login', function () {return response('', 204);});
-  Route::get('mac', function () {
-    $ipAddress= $_SERVER['REMOTE_ADDR'];
-    $arp= 'arp -a ' . $ipAddress;
-    $lines=explode(" ", exec($arp));
-    dd($lines[3]);
-  });
-Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
+  Route::get('tag', 'PortalController@tag');
+  Route::get('check', 'PortalController@check');
+  Route::get('register', 'PortalController@register');
+  Route::get('start', 'PortalController@start');
+  Route::get('stop', 'PortalController@stop');
 });
 
+Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
