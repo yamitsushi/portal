@@ -4,10 +4,23 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use \Carbon\Carbon;
 
 class Client extends Model
 {
     protected $fillable = ['mac', 'time'];
+
+    public static function convertPulse($pulse)
+    {
+        $left = $pulse;
+        $timer = 0;
+        $timer += floor($left / 10) * 60;
+        $left = $left % 10;
+        $timer += floor($left / 5) * 30;
+        $left = $left % 5;
+        $timer += $left * 5;
+        return $timer;
+    }
 
     public static function retrieveUser($ip)
     {
@@ -18,14 +31,20 @@ class Client extends Model
 
     public static function check($ip)
     {
-        abort(403, 'Under Contruction.');
-        $current = json_encode(Storage::get('paying.json'));
+        $current = json_decode(Storage::get('paying.json'));
         $client = Client::retrieveUser($ip);
-        //$current = Client::where('mac', $paying->mac
-        //$client->date = Carbon::now();
-        //Storage::put('paying.json', json_encode($client));
-        $current = Carbon::now();
-        return $current->diffInSeconds($client->date);
+
+	if(Carbon::parse($current->date)->diffInSeconds(Carbon::now()) >= 60)
+        {
+            if($current->pulse > 0)
+                Client::where('mac', $current->mac)->increments('time', Client::convertPulse($current->pulse));
+            $current->mac = $client->mac;
+            $current->pulse = 0;
+            $current->date = Carbon::now();
+            Storage::put('paying.json', json_encode($current));
+        }
+        $current->date = Carbon::parse($current->date)->toDateTimeString();
+        return response()->json($current);
     }
 
     public static function register($ip)
