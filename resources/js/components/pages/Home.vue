@@ -55,7 +55,7 @@
     methods: {
       rent: function () {
         this.$store.commit('isLoading', true);
-        axios.post('./tag', {
+        axios.get('./tag', {
         }).then((response) => {
           console.log(response);
           this.$router.push({ name: 'portal' })

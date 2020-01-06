@@ -11,7 +11,7 @@ class DisableCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'portal:disable {ip : The IP of the user}';
+    protected $signature = 'portal:disable {mac : MAC of the user} {ip : IP of the user}';
 
     /**
      * The console command description.
@@ -37,6 +37,7 @@ class DisableCommand extends Command
      */
     public function handle()
     {
-         exec("sudo iptables -t mangle -D OUT -s " . $this->argument('ip') . " -j MARK --set-mark 99");
+        exec("sudo iptables -t mangle -D OUT -m mac --mac-source " . $this->argument('mac') ." -j MARK --set-mark 99");
+        exec("sudo rmtrack ".$this->argument('ip'));
     }
 }

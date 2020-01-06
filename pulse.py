@@ -13,8 +13,8 @@ def pulse_callback(channel):
 	process.append(pulse)
 
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(7, GPIO.RISING, callback=pulse_callback)
+GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(7, GPIO.FALLING, callback=pulse_callback)
 
 
 

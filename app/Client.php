@@ -19,7 +19,7 @@ class Client extends Model
         $timer += floor($left / 5) * 30;
         $left = $left % 5;
         $timer += $left * 5;
-        return $timer;
+        return $timer * 60;
     }
 
     public static function retrieveUser($ip)
@@ -32,10 +32,10 @@ class Client extends Model
     public static function check($ip)
     {
         $current = json_decode(Storage::get('paying.json'));
-        $client = Client::retrieveUser($ip);
 
 	if(Carbon::parse($current->date)->diffInSeconds(Carbon::now()) >= 60)
         {
+            $client = Client::retrieveUser($ip);
             if($current->pulse > 0)
                 Client::where('mac', $current->mac)->increments('time', Client::convertPulse($current->pulse));
             $current->mac = $client->mac;
@@ -44,21 +44,32 @@ class Client extends Model
             Storage::put('paying.json', json_encode($current));
         }
         $current->date = Carbon::parse($current->date)->toDateTimeString();
-        return response()->json($current);
+        return $current;
     }
 
-    public static function register($ip)
+    public static function subs()
     {
-        abort(403, 'Under Contruction.');
+        $current = json_decode(Storage::get('paying.json'));
+        Client::where('mac', $current->mac)->increment('time', Client::convertPulse($current->pulse));
+        $current->pulse = 0;
+        $current->date = Carbon::yesterday();
+        Storage::put('paying.json', json_encode($current));
+        return Client::where('mac', $current->mac)->first();
     }
 
-    public static function start($ip)
+    public static function startInternet($ip)
     {
-        abort(403, 'Under Contruction.');
+        $client = Client::retrieveUser($ip);
+        \Artisan::call('portal:enable '.$client->mac.' '.$ip);
+        exit();
     }
 
-    public static function stop($ip)
+    public static function stopInternet($ip)
     {
-        abort(403, 'Under Contruction.');
+        $client = Client::retrieveUser($ip);
+        //$client->time -= Carbon::parse($client->updated_at)->diffInSeconds(Carbon::now());
+        //$client = Client::where('mac', $client->mac)->update('is_active', false);
+        \Artisan::call('portal:disable '.$client->mac.' '.$ip);
+        exit();
     }
 }

@@ -8,7 +8,8 @@ Vue.use(VueRouter)
 
 const routes = [
   { path: '/', name: 'index', component: Home },
-  { path: '/portal', name: 'portal', component: Portal }
+  { path: '/portal', name: 'portal', component: Portal },
+  { path: '*', redirect: { name: 'index' } }
 ]
 
 export default new VueRouter({

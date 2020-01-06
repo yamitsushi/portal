@@ -76,7 +76,7 @@
     methods: {
       rent: function () {
         this.$store.commit('isLoading', true);
-        axios.post('./login', {
+        axios.get('./start', {
           timer: this.$store.getters.amount
         }).then((response) => {
           console.log(response);

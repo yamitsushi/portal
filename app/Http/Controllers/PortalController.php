@@ -16,21 +16,21 @@ class PortalController extends Controller
 
     public function check(Request $request)
     {
-        return Client::check($request->ip);
+        return response()->json(Client::check($request->ip()));
     }
 
     public function register(Request $request)
     {
-        return Client::register($request->ip);
+        return response()->json(Client::subs());
     }
 
     public function start(Request $request)
     {
-        return Client::startInternet($request->ip);
+        return response()->json(Client::startInternet($request->ip()));
     }
 
     public function stop(Request $request)
     {
-        return Client::stopInternet($request->ip);
+        return response()->json(Client::stopInternet($request->ip()));
     }
 }

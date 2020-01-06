@@ -1975,7 +1975,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$store.commit('isLoading', true);
-      axios.post('./tag', {}).then(function (response) {
+      axios.get('./tag', {}).then(function (response) {
         console.log(response);
 
         _this.$router.push({
@@ -2084,7 +2084,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     rent: function rent() {
       this.$store.commit('isLoading', true);
-      axios.post('./login', {
+      axios.get('./start', {
         timer: this.$store.getters.amount
       }).then(function (response) {
         console.log(response);
@@ -83566,10 +83566,10 @@ if (token) {
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
-  key: "SecretKey",
+  key: "asdf",
   cluster: "mt1",
   //encrypted: true
-  wsHost: window.location.hostname,
+  wsHost: '10.0.0.1',
   wsPort: 6001
 });
 
@@ -83903,6 +83903,11 @@ var routes = [{
   path: '/portal',
   name: 'portal',
   component: _components_pages_Portal_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+}, {
+  path: '*',
+  redirect: {
+    name: 'index'
+  }
 }];
 /* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   mode: 'history',
