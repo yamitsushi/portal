@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Client;
 
 class EnableCommand extends Command
@@ -39,11 +40,10 @@ class EnableCommand extends Command
      */
     public function handle()
     {
-        //$client = Client::retrieveUser($this->argument('ip'));
-        //$process = new Process("python3 monitor.py {json_encode($client)}");
-        //$process->run();
-        exec("sudo iptables -t mangle -I OUT -m mac --mac-source ". $this->argument('mac') ." -j MARK --set-mark 99");
-        exec("sudo rmtrack ".$this->argument('ip'));
-        $this->info('Internet Activated');
+
+        $process = new Process("sudo iptables -t mangle -I OUT -m mac --mac-source ". $this->argument('mac') ." -j MARK --set-mark 99");
+        $process->run();
+        $process = new Process("sudo rmtrack ".$this->argument('ip'));
+        $process->run();
     }
 }
