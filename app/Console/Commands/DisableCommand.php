@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use \Carbon\Carbon;
+use App\Client;
 
 class DisableCommand extends Command
 {
@@ -12,7 +14,7 @@ class DisableCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'portal:disable {mac : MAC of the user} {ip : IP of the user}';
+    protected $signature = 'portal:disable {mac : MAC of the user} {--monitor: Disabled by monitor}';
 
     /**
      * The console command description.
@@ -38,10 +40,18 @@ class DisableCommand extends Command
      */
     public function handle()
     {
-        $process = new Process("sudo iptables -t mangle -D OUT -m mac --mac-source " . $this->argument('mac') ." -j MARK --set-mark 99");
+        $client = Client::where('mac', $this->argument('mac'))->first();
+        $stamp = Carbon::parse($client->updated_at)->addSeconds($client->time);
+        $date = $stamp->format("yy-m-d");
+        $time = $stamp->format("H:i:s");
+
+        $process = new Process("sudo iptables -t mangle -D OUT -m mac --mac-source ". $this->argument('mac') ." time --datestop ". $date ."T". $time ."-j MARK --set-mark 99");
         $process->run();
         $process = new Process("sudo rmtrack ".$this->argument('ip'));
         $process->run();
 
+        $client->is_active = False;
+        $client->is_monitoring = $this->argument('--monitor') ? False : True;
+        $client->save();
     }
 }

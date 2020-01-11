@@ -35,16 +35,19 @@ class Client extends Model
 
 	if(Carbon::parse($current->date)->diffInSeconds(Carbon::now()) >= 60)
         {
-            $client = Client::retrieveUser($ip);
             if($current->pulse > 0)
-                Client::where('mac', $current->mac)->increments('time', Client::convertPulse($current->pulse));
+                Client::where('mac', $current->mac)->increment('time', Client::convertPulse($current->pulse));
+            $client = Client::retrieveUser($ip);
             $current->mac = $client->mac;
             $current->pulse = 0;
             $current->date = Carbon::now();
             Storage::put('paying.json', json_encode($current));
         }
-        $current->date = Carbon::parse($current->date)->toDateTimeString();
-        return $current;
+        if($current->mac == Client::retrieveUser($ip)->mac)
+        {
+            $current->date = Carbon::parse($current->date)->toDateTimeString();
+            return $current;
+        } else abort(403, 'Portal in use.');
     }
 
     public static function subs()
@@ -67,8 +70,6 @@ class Client extends Model
     public static function stopInternet($ip)
     {
         $client = Client::retrieveUser($ip);
-        //$client->time -= Carbon::parse($client->updated_at)->diffInSeconds(Carbon::now());
-        //$client = Client::where('mac', $client->mac)->update('is_active', false);
         \Artisan::call('portal:disable '.$client->mac.' '.$ip);
         exit();
     }
