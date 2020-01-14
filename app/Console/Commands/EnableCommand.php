@@ -45,7 +45,7 @@ class EnableCommand extends Command
 $stamp = Carbon::now()->addSeconds(300);
         $date = $stamp->format("yy-m-d");
         $time = $stamp->format("H:i:s");
-        $process = new Process("sudo iptables -t mangle -I OUT -m mac --mac-source ". $this->argument('mac') ." time --datestop ". $date ."T". $time ."-j MARK --set-mark 99")->run();
+        //$process = new Process("sudo iptables -t mangle -I OUT -m mac --mac-source ". $this->argument('mac') ." time --datestop ". $date ."T". $time ."-j MARK --set-mark 99")->run();
         $process = new Process("sudo rmtrack ".$this->argument('ip'));
         $process->run();
         if(!$client->is_monitoring)

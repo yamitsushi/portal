@@ -13,10 +13,10 @@
 
 Route::prefix('/')->group(function () {
   Route::get('tag', 'PortalController@tag');
-  Route::get('check', 'PortalController@check');
-  Route::get('register', 'PortalController@register');
-  Route::get('start', 'PortalController@start');
-  Route::get('stop', 'PortalController@stop');
+  Route::post('check', 'PortalController@check');
+  Route::post('register', 'PortalController@register');
+  Route::post('start', 'PortalController@start');
+  Route::post('stop', 'PortalController@stop');
 });
 
 Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');

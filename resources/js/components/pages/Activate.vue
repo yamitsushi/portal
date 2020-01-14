@@ -20,18 +20,11 @@
                 dark
                 flat
               >
-                <v-toolbar-title>Payment Center</v-toolbar-title>
+                <v-toolbar-title>Internet Status</v-toolbar-title>
                 <v-spacer />
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field
-                    label="Total Amount"
-                    name="amount"
-                    type="text"
-                    :value="pulse"
-                  />
-
                   <v-text-field
                     label="Time Equivalent"
                     name="time"
@@ -42,7 +35,8 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn color="primary" v-on:click="rent">Register</v-btn>
+                <v-btn color="primary" v-on:click="">Activate</v-btn>
+                <v-btn color="error" v-on:click="">Deactivate</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -54,31 +48,25 @@
 
 <script>
   export default {
-    computed: {
-        pulse() { return this.$store.getters.amount; },
-        time() { return this.$store.getters.time }
+    data () {
+      return {
+        loop: null
+      }
     },
-    created () {
-      Echo.channel('portal')
-        .listen('PulseMessage', (e) => {
-            this.$store.commit('pulseIncrement');
-        });
+    computed: {
+        time() { return this.$store.getters.timer }
     },
     mounted () {
+      this.startTimer();
       this.$store.commit('isLoading', false);
     },
     methods: {
-      rent: function () {
-        this.$store.commit('isLoading', true);
-        axios.post('./register', {
-        }).then((response) => {
-          alert('Registration Successful');
-          this.$store.commit('isLoading', false);
-          this.$router.push({ name: 'home' })
-        }).catch((error) => {
-          alert('Error Found, Please try again');
-          this.$store.commit('isLoading', false);
-        });
+      startTimer() {
+        this.loop = setInterval(this.countDown, 1000);    
+      },
+      countDown() {
+        if(this.$store.getters.seconds > 0) this.$store.commit('decreaseTime');
+        else clearInterval(this.loop);
       }
     }
   }

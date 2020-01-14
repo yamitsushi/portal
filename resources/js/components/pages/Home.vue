@@ -31,6 +31,7 @@
                 </v-simple-table>
                 <div class="text-center">
                   <v-btn x-large color="primary" v-on:click="rent">Rent Internet</v-btn>
+                  <v-btn x-large color="success" v-on:click="activate">Activate Internet</v-btn>
                 </div>
               </v-card-text>
             </v-card>
@@ -55,12 +56,23 @@
     methods: {
       rent: function () {
         this.$store.commit('isLoading', true);
-        axios.get('./tag', {
+        axios.post('./check', {
         }).then((response) => {
-          console.log(response);
-          this.$router.push({ name: 'portal' })
+          this.$router.push({ name: 'portal' });
         }).catch((error) => {
-          console.log(error);
+          alert('Error Found, try again later.');
+          this.$store.commit('isLoading', false);
+        });
+      },
+      activate: function () {
+        this.$store.commit('isLoading', true);
+        axios.post('./tag', {
+        }).then((response) => {
+          this.$store.commit('timer', response['time']);
+          this.$router.push({ name: 'activate' });
+        }).catch((error) => {
+          alert('Error Found, try again later.');
+          this.$store.commit('isLoading', false);
         });
       }
     },

@@ -16,8 +16,7 @@ class Kernel extends ConsoleKernel
         Commands\PulseCommand::class,
         Commands\EnableCommand::class,
         Commands\DisableCommand::class,
-        Commands\MonitorCommand::class,
-        Commands\AcceptorCommand::class
+        Commands\MonitorCommand::class
     ];
 
     /**

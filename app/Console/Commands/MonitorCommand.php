@@ -37,12 +37,6 @@ class MonitorCommand extends Command
      */
     public function handle()
     {
-        while (@ ob_end_flush());
-        $proc = popen("python pulse.py", 'r');
-        echo $proc;
-        while (!feof($proc))
-        {
-            fread($proc, 4096);
-        }
+        exec("python scripts/monitor.py ". $this->argument('mac') ." ". $this->argument('ip') ." > /dev/null &");
     }
 }
