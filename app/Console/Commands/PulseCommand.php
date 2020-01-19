@@ -41,11 +41,13 @@ class PulseCommand extends Command
     public function handle()
     {
         $paying = json_decode(Storage::get('paying.json'));
-        $paying->pulse+= 1;
-        $paying->date= Carbon::now()->toDateTimeString();
-        Storage::put('paying.json', json_encode($paying));
-        event(new PulseMessage());
-        $this->line(json_encode($paying));
+       // if(Carbon::now()->diffInSeconds(Carbon::parse($paying->date)) >= 60)
+       // {
+            $paying->pulse+= 1;
+            $paying->date= Carbon::now()->toDateTimeString();
+            Storage::put('paying.json', json_encode($paying));
+            event(new PulseMessage());
+       // }
         $this->line('Pulse Send');
     }
 }
