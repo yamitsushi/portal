@@ -15,8 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\PulseCommand::class,
         Commands\EnableCommand::class,
-        Commands\DisableCommand::class,
-        Commands\MonitorCommand::class
+        Commands\DisableCommand::class
     ];
 
     /**

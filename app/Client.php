@@ -8,25 +8,30 @@ use \Carbon\Carbon;
 
 class Client extends Model
 {
-    protected $fillable = ['mac', 'time'];
+    protected $fillable = ['mac', 'time', 'stamp', 'is_active'];
 
     public static function convertPulse($pulse)
     {
-        $left = $pulse;
-        $timer = 0;
-        $timer += floor($left / 10) * 60;
-        $left = $left % 10;
-        $timer += floor($left / 5) * 30;
-        $left = $left % 5;
-        $timer += $left * 5;
-        return $timer * 60;
+        return $pulse * 1800;
     }
 
     public static function retrieveUser($ip)
     {
-        $arp= 'arp -a ' . $ip;
-        $lines=explode(" ", exec($arp));
-        return Client::firstOrCreate(['mac' => $lines[3]]);
+        $arp = 'arp -a ' . $ip;
+        $lines = explode(" ", exec($arp));
+        $client = Client::firstOrCreate(['mac' => $lines[3]]);
+        $client->is_active = $client->is_active ? True : False;
+        if($client->is_active)
+        {
+            $stamp = Carbon::parse($client->stamp);
+            $stamp = $stamp->addSeconds($client->time);
+            $now = Carbon::now();
+            if($stamp > $now)
+                $client->time = $now->diffInSeconds($stamp);
+            else
+                $client->time = 0;
+        }
+        return $client;
     }
 
     public static function check($ip)
@@ -41,6 +46,7 @@ class Client extends Model
             $current->mac = $client->mac;
             $current->pulse = 0;
             $current->date = Carbon::now();
+            if($client->is_active) Client::stopInternet($ip);
             Storage::put('paying.json', json_encode($current));
         }
         if($current->mac == Client::retrieveUser($ip)->mac)

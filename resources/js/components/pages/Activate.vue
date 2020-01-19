@@ -26,7 +26,7 @@
               <v-card-text>
                 <v-form>
                   <v-text-field
-                    label="Time Equivalent"
+                    label="Time Left"
                     name="time"
                     type="text"
                     :value="time"
@@ -35,8 +35,8 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn color="primary" v-on:click="">Activate</v-btn>
-                <v-btn color="error" v-on:click="">Deactivate</v-btn>
+                <v-btn color="primary" v-on:click="activate" :disabled="isActive">Activate</v-btn>
+                <v-btn color="error" v-on:click="deactivate" :disabled="!isActive">Deactivate</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -54,10 +54,14 @@
       }
     },
     computed: {
-        time() { return this.$store.getters.timer }
+        time() { return this.$store.getters.timer },
+        isActive() { return !!this.$store.getters.isActive }
+    },
+    created() {
+      if(this.$store.getters.isFirst) this.$router.push({ name: 'index' });
+      if(this.isActive) this.startTimer();
     },
     mounted () {
-      this.startTimer();
       this.$store.commit('isLoading', false);
     },
     methods: {
@@ -66,7 +70,37 @@
       },
       countDown() {
         if(this.$store.getters.seconds > 0) this.$store.commit('decreaseTime');
-        else clearInterval(this.loop);
+        else this.deactivate();
+      },
+      activate() {
+        this.$store.commit('isLoading', true);
+        axios.post('./start', {
+        }).then((response) => {
+          this.$store.commit('isActive', true);
+          this.$store.commit('message', 'Internet Activated.');
+          this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
+        }).catch((error) => {
+          this.$store.commit('message', 'Error Found, try again later.');
+          this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
+        });
+      },
+      deactivate() {
+        this.$store.commit('isLoading', true);
+        axios.post('./stop', {
+        }).then((response) => {
+          clearInterval(this.loop);
+          this.$store.commit('isActive', false);
+          this.$store.commit('message', 'Internet Deactivated.');
+          this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
+        }).catch((error) => {
+          clearInterval(this.loop);
+          this.$store.commit('message', 'Error Found, try again later.');
+          this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
+        })
       }
     }
   }

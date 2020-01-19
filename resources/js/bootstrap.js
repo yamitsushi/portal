@@ -40,5 +40,6 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     //encrypted: true
     wsHost: '10.0.0.1',
-    wsPort: 6001
+    wsPort: 6001,
+    disableStats: true,
 });

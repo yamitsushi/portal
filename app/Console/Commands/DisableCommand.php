@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Client;
 
@@ -14,7 +15,7 @@ class DisableCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'portal:disable {mac : MAC of the user} {--monitor: Disabled by monitor}';
+    protected $signature = 'portal:disable {mac : MAC of the user} {ip : IP of the user}';
 
     /**
      * The console command description.
@@ -41,17 +42,27 @@ class DisableCommand extends Command
     public function handle()
     {
         $client = Client::where('mac', $this->argument('mac'))->first();
-        $stamp = Carbon::parse($client->updated_at)->addSeconds($client->time);
-        $date = $stamp->format("yy-m-d");
-        $time = $stamp->format("H:i:s");
+        if($client->is_active == true)
+        {
+            $stamp = Carbon::parse($client->stamp);
+            $stamp = $stamp->addSeconds($client->time);
+            $now = Carbon::now();
 
-        $process = new Process("sudo iptables -t mangle -D OUT -m mac --mac-source ". $this->argument('mac') ." time --datestop ". $date ."T". $time ."-j MARK --set-mark 99");
-        $process->run();
-        $process = new Process("sudo rmtrack ".$this->argument('ip'));
-        $process->run();
+            if($stamp > $now)
+                $client->time = $now->diffInSeconds($stamp);
+            else
+                $client->time = 0;
+            $client->is_active = false;
+            $client->save();
 
-        $client->is_active = False;
-        $client->is_monitoring = $this->argument('--monitor') ? False : True;
-        $client->save();
+            $list = json_decode(Storage::get('list.json'), true);
+            unset($list[$client->mac]);
+            Storage::put('list.json', json_encode($list));
+
+            $date = $stamp->format("yy-m-d");
+            $time = $stamp->format("H:i:s");
+            shell_exec("sudo iptables -t mangle -D internet -m mac --mac-source ". $this->argument('mac') ." -m time --datestop ". $date ."T". $time ." -j RETURN");
+            shell_exec("sudo rmtrack ".$this->argument('ip'));
+        }
     }
 }

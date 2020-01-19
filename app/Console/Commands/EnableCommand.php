@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Client;
 
@@ -41,22 +42,21 @@ class EnableCommand extends Command
     public function handle()
     {
         $client = Client::where('mac', $this->argument('mac'))->first();
-        $stamp = Carbon::parse($client->updated_at)->addSeconds($client->time);
-$stamp = Carbon::now()->addSeconds(300);
-        $date = $stamp->format("yy-m-d");
-        $time = $stamp->format("H:i:s");
-        //$process = new Process("sudo iptables -t mangle -I OUT -m mac --mac-source ". $this->argument('mac') ." time --datestop ". $date ."T". $time ."-j MARK --set-mark 99")->run();
-        $process = new Process("sudo rmtrack ".$this->argument('ip'));
-        $process->run();
-        if(!$client->is_monitoring)
-        {/*
-            popen("python scripts/monitor.py ". $this->argument('mac'), 'r');
-            $process = new Process("python monitor.py " . $argument('ip'));
-            $process->run();
-            $client->is_monitoring = True;
-*/
+        if($client->is_active == false)
+        {
+            $client->stamp = Carbon::now();
+            $client->is_active = true;
+            $client->save();
+
+            $list = json_decode(Storage::get('list.json'), true);
+            $list[$client->mac] = [$client->mac, $this->argument('ip')];
+            Storage::put('list.json', json_encode($list));
+
+            $stamp = $client->stamp->addSeconds($client->time);
+            $date = $stamp->format("yy-m-d");
+            $time = $stamp->format("H:i:s");
+            shell_exec("sudo iptables -t mangle -I internet -m mac --mac-source ". $this->argument('mac') ." -m time --datestop ". $date ."T". $time ." -j RETURN");
+            shell_exec("sudo rmtrack ". $this->argument('ip'));
         }
-        $client->is_active = True;
-        $client->save();
     }
 }

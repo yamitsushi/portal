@@ -12,7 +12,7 @@
 */
 
 Route::prefix('/')->group(function () {
-  Route::get('tag', 'PortalController@tag');
+  Route::post('tag', 'PortalController@tag');
   Route::post('check', 'PortalController@check');
   Route::post('register', 'PortalController@register');
   Route::post('start', 'PortalController@start');

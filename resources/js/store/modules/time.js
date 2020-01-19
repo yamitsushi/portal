@@ -1,9 +1,11 @@
 const state = {
-  seconds: 3610
+  isActive: false,
+  seconds: 0
 }
 
 const getters = {
   seconds : state => { return state.seconds },
+  isActive : state => { return state.isActive },
   timer : state => {
     var timer = state.seconds;
 
@@ -34,6 +36,12 @@ const getters = {
 const actions = {}
 
 const mutations = {
+  timer (state, sec) {
+    state.seconds = sec;
+  },
+  isActive (state, status) {
+    state.isActive = status;
+  },
   decreaseTime (state) {
     state.seconds--;
   }

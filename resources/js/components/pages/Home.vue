@@ -25,13 +25,13 @@
                   <tbody>
                     <tr v-for="item in pricing" :key="item.price">
                       <td>{{ item.cost }} pesos</td>
-                      <td>{{ (item.time/60) }} minutes</td>
+                      <td>{{ (item.time/60) }} Minutes</td>
                     </tr>
                   </tbody>
                 </v-simple-table>
                 <div class="text-center">
                   <v-btn x-large color="primary" v-on:click="rent">Rent Internet</v-btn>
-                  <v-btn x-large color="success" v-on:click="activate">Activate Internet</v-btn>
+                  <v-btn x-large color="success" v-on:click="status">Internet Status</v-btn>
                 </div>
               </v-card-text>
             </v-card>
@@ -47,11 +47,12 @@
     data () {
       return {
         pricing: [
-          { cost: 1, time: 300 },
-          { cost: 5, time: 1800 },
-          { cost: 10, time: 3600 }
+          { cost: 1, time: 1800 },
         ],
       }
+    },
+    created () {
+      this.$store.commit('inUsed');
     },
     methods: {
       rent: function () {
@@ -60,19 +61,22 @@
         }).then((response) => {
           this.$router.push({ name: 'portal' });
         }).catch((error) => {
-          alert('Error Found, try again later.');
+          this.$store.commit('message', 'Error Found, try again later.');
           this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
         });
       },
-      activate: function () {
+      status: function () {
         this.$store.commit('isLoading', true);
         axios.post('./tag', {
         }).then((response) => {
-          this.$store.commit('timer', response['time']);
-          this.$router.push({ name: 'activate' });
+          this.$store.commit('timer', response['data']['time']);
+          this.$store.commit('isActive', response['data']['is_active'])
+          this.$router.push({ name: 'status' });
         }).catch((error) => {
-          alert('Error Found, try again later.');
+          this.$store.commit('message', 'Error Found, try again later.');
           this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
         });
       }
     },

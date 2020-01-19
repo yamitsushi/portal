@@ -45,6 +45,7 @@ class PulseCommand extends Command
         $paying->date= Carbon::now()->toDateTimeString();
         Storage::put('paying.json', json_encode($paying));
         event(new PulseMessage());
+        $this->line(json_encode($paying));
         $this->line('Pulse Send');
     }
 }

@@ -19,6 +19,7 @@ class CreateClientsTable extends Migration
             $table->macAddress('mac')->unique();
             $table->integer('time')->default(0);
             $table->boolean('is_active')->default(false);
+            $table->timestamp('stamp')->nullable();
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@ thread = []
 
 def pulse_callback(channel):
     global thread
-    pulse = subprocess.Popen(["php", "artisan", "pulse:generate"], stdout=subprocess.PIPE)
+    pulse = subprocess.Popen(["php", "artisan", "portal:pulse"], stdout=subprocess.PIPE)
     thread.append(pulse)
 
 
@@ -20,6 +20,7 @@ def startTerminator():
 
 
 try:
+    GPIO.cleanup()
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(7, GPIO.FALLING, callback=pulse_callback)

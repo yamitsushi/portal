@@ -56,11 +56,16 @@
   export default {
     computed: {
         pulse() { return this.$store.getters.amount; },
-        time() { return this.$store.getters.time }
+        time() { return this.$store.getters.time },
+        count() { return this.$store.getters.timer }
     },
     created () {
+      if(this.$store.getters.isFirst) this.$router.push({ name: 'index' });
+      this.$store.commit('timer', 60);
+      this.startTimer();
       Echo.channel('portal')
         .listen('PulseMessage', (e) => {
+            this.$store.commit('timer', 60);
             this.$store.commit('pulseIncrement');
         });
     },
@@ -68,16 +73,29 @@
       this.$store.commit('isLoading', false);
     },
     methods: {
+      startTimer() {
+        this.loop = setInterval(this.countDown, 1000);
+      },
+      countDown() {
+        if(this.$store.getters.seconds > 0) this.$store.commit('decreaseTime');
+        else {
+          clearInterval(this.loop);
+          this.rent();
+        }
+      },
       rent: function () {
         this.$store.commit('isLoading', true);
         axios.post('./register', {
         }).then((response) => {
-          alert('Registration Successful');
+          clearInterval(this.loop);
+          this.$store.commit('message', 'Registration Successful.');
           this.$store.commit('isLoading', false);
-          this.$router.push({ name: 'home' })
+          this.$router.push({ name: 'message' });
         }).catch((error) => {
-          alert('Error Found, Please try again');
+          clearInterval(this.loop);
+          this.$store.commit('message', 'Error Found, try again later.');
           this.$store.commit('isLoading', false);
+          this.$router.push({ name: 'message' });
         });
       }
     }
