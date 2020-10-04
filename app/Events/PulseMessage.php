@@ -3,27 +3,47 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+use Illuminate\Support\Facades\Storage;
+use App\Models\CoinLog;
 
 class PulseMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
-
+    public $pulse, $time, $mac, $timeout;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($id)
     {
-        $this->message = 'pulse';
+        $time = 0;
+        $log = CoinLog::with('client:id,mac')->find($id);
+        $rate = collect(json_decode(Storage::get('rates.json'), true))->sortBy('pulse')->reverse()->toArray();
+
+        if($log->pulse > 0) {
+            $pulse = $log->pulse;
+            foreach($rate as $temp) {
+                if((integer) ($pulse / $temp['pulse']) > 0) {
+                    $time += $temp['time'] * (integer) ($pulse / $temp['pulse']);
+                    $pulse = $pulse % $temp['pulse'];
+                };
+            };
+
+        };
+
+        $this->timeout = 60;
+        $this->pulse = $log->pulse;
+        $this->time = $time;
+        $this->mac = $log->client->mac;
     }
 
     /**
@@ -33,6 +53,6 @@ class PulseMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('portal');
+        return new Channel('InsertCoin');
     }
 }

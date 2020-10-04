@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,12 +13,6 @@
 |
 */
 
-Route::prefix('/')->group(function () {
-  Route::post('tag', 'PortalController@tag');
-  Route::post('check', 'PortalController@check');
-  Route::post('register', 'PortalController@register');
-  Route::post('start', 'PortalController@start');
-  Route::post('stop', 'PortalController@stop');
+Route::get('/', function () {
+    return view('welcome');
 });
-
-Route::view('{any1?}/{any2?}/{any3?}', 'pages/spa');
