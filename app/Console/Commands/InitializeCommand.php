@@ -95,6 +95,9 @@ class InitializeCommand extends Command
         shell_exec("sudo echo 'hw_mode=". $hw_mode ."' >> /etc/hostapd/hostapd.conf");
         shell_exec("sudo echo 'channel=". $channel ."' >> /etc/hostapd/hostapd.conf");
 
+        //rmtrack command
+        shell_exec("sudo cp ". base_path() ."/config/extra/rmtrack /usr/sbin/");
+
         shell_exec("sudo systemctl reboot");
     }
 }
