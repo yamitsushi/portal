@@ -58,7 +58,7 @@ class InitializeCommand extends Command
         shell_exec("sudo systemctl enable hostapd");
 
         //install dnsmasq
-        shell_exec("sudo apt install dnsmasq")
+        shell_exec("sudo apt install dnsmasq");
 
         //persistent iptable
         shell_exec("sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent");
