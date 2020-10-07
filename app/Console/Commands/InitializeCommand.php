@@ -62,6 +62,7 @@ class InitializeCommand extends Command
         //website
         shell_exec("sudo cp ". base_path() ."/config/extra/laravel.conf /etc/apache2/sites-available/");
         shell_exec("sudo a2ensite laravel");
+        shell_exec("sudo a2enmod rewrite");
 
         //install hostapd
         shell_exec("sudo apt install hostapd -y");
