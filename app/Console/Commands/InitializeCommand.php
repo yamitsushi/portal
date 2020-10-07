@@ -85,9 +85,12 @@ class InitializeCommand extends Command
         //enable routing
         shell_exec("sudo bash -c \"echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/routed-ap.conf\"");
 
-        //mask all routes
+        //test marks
         shell_exec("sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
-
+        shell_exec("sudo iptables -N internet -t mangle");
+        shell_exec("sudo iptables -t mangle -A internet -j MARK --set-mark 99");
+        shell_exec("sudo iptables -t nat -A PREROUTING -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1");
+        shell_exec("sudo iptables -t filter -A FORWARD -m mark --mark 99 -j DROP");
         //save changes
         shell_exec("sudo netfilter-persistent save");
 
