@@ -15,8 +15,8 @@ class ClientController extends Controller
 
     public function __construct(Request $request)
     {
-        $arp = explode(" ", exec("getmac"));
-        $this->mac = str_replace('-', ':', $arp[0]);
+        $arp = explode(" ", exec("arp -an"));
+        $this->mac = $arp[3];
     }
 
     public function index(Request $request)
