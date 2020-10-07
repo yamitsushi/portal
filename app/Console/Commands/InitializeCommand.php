@@ -53,8 +53,11 @@ class InitializeCommand extends Command
         //cron task
         shell_exec("(crontab -l ; echo \"* * * * * cd /var/www/portal && php artisan schedule:run >> /dev/null 2>&1\") | crontab -");
 
-        //websocket
-        shell_exec("sudo cp ". base_path() ."/config/extra/websockets.conf /etc/conf.d/");
+
+        //install supervisor
+        shell_exec("sudo apt install supervisor -y");
+        shell_exec("sudo cp ". base_path() ."/config/extra/websockets.conf /etc/supervisor/conf.d/");
+        shell_exec("sudo cp ". base_path() ."/config/extra/pulser.conf /etc/supervisor/conf.d/");
 
         //website
         shell_exec("sudo cp ". base_path() ."/config/extra/laravel.conf /etc/apache2/sites-available/");
