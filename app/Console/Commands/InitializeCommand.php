@@ -82,7 +82,7 @@ class InitializeCommand extends Command
         shell_exec("sudo echo 'nohook wpa_supplicant' >> /etc/dhcpcd.conf");
 
         //enable routing
-        shell_exec("sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/routed-ap.conf");
+        shell_exec("sudo bash -c \"echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/routed-ap.conf\"");
 
         //mask all routes
         shell_exec("sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
@@ -97,19 +97,19 @@ class InitializeCommand extends Command
 
 
         //configure dhcp server
-        shell_exec("sudo echo 'interface=". $interface . "' >> /etc/dnsmasq.conf");
-        shell_exec("sudo echo 'dhcp-range=". $range ."' >> /etc/dnsmasq.conf");
+        shell_exec("sudo bash -c \"echo 'interface=". $interface . "' >> /etc/dnsmasq.conf\"");
+        shell_exec("sudo bash -c \"echo 'dhcp-range=". $range ."' >> /etc/dnsmasq.conf\"");
 
 
         //unblock wlan
         shell_exec("sudo rfkill unblock wlan");
 
 
-        shell_exec("sudo echo 'country_code=". $country_code ."' >> /etc/hostapd/hostapd.conf");
-        shell_exec("sudo echo 'driver=". $driver ."' >> /etc/hostapd/hostapd.conf");
-        shell_exec("sudo echo 'ssid=". $ssid ."' >> /etc/hostapd/hostapd.conf");
-        shell_exec("sudo echo 'hw_mode=". $hw_mode ."' >> /etc/hostapd/hostapd.conf");
-        shell_exec("sudo echo 'channel=". $channel ."' >> /etc/hostapd/hostapd.conf");
+        shell_exec("sudo bash -c \"echo 'country_code=". $country_code ."' >> /etc/hostapd/hostapd.conf\"");
+        shell_exec("sudo bash -c \"echo 'driver=". $driver ."' >> /etc/hostapd/hostapd.conf\"");
+        shell_exec("sudo bash -c \"echo 'ssid=". $ssid ."' >> /etc/hostapd/hostapd.conf\"");
+        shell_exec("sudo bash -c \"echo 'hw_mode=". $hw_mode ."' >> /etc/hostapd/hostapd.conf\"");
+        shell_exec("sudo bash -c \"echo 'channel=". $channel ."' >> /etc/hostapd/hostapd.conf\"");
 
 
         shell_exec("sudo systemctl reboot");
