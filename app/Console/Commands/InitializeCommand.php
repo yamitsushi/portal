@@ -50,23 +50,33 @@ class InitializeCommand extends Command
         //symlink connect to portal
         shell_exec("sudo ln -s /var/www/portal ". base_path());
 
+        //cron task
+        shell_exec("(crontab -l ; echo \"* * * * * cd /var/www/portal && php artisan schedule:run >> /dev/null 2>&1\") | crontab -");
+
+        //websocket
+        shell_exec("sudo cp ". base_path() ."/config/extra/websockets.conf /etc/conf.d/");
+
+        //website
+        shell_exec("sudo cp ". base_path() ."/config/extra/laravel.conf /etc/apache2/sites-available/");
+        shell_exec("sudo a2ensite laravel");
+
         //install hostapd
-        shell_exec("sudo apt install hostapd");
+        shell_exec("sudo apt install hostapd -y");
 
         //enable hostapd
         shell_exec("sudo systemctl unmask hostapd");
         shell_exec("sudo systemctl enable hostapd");
 
         //install dnsmasq
-        shell_exec("sudo apt install dnsmasq");
+        shell_exec("sudo apt install dnsmasq -y");
 
         //persistent iptable
-        shell_exec("sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent");
+        shell_exec("sudo DEBIAN_FRONTEND=noninteractive apt install netfilter-persistent iptables-persistent -y");
 
         //append dhcpcd
         shell_exec("sudo echo 'interface '". $interface ." >> /etc/dhcpcd.conf");
         shell_exec("sudo echo 'static ip_address=". $ipv4 ."' >> /etc/dhcpcd.conf");
-        shell_exec("echo 'nohook wpa_supplicant' >> /etc/dhcpcd.conf");
+        shell_exec("sudo echo 'nohook wpa_supplicant' >> /etc/dhcpcd.conf");
 
         //enable routing
         shell_exec("sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/routed-ap.conf");
@@ -78,6 +88,9 @@ class InitializeCommand extends Command
         shell_exec("sudo netfilter-persistent save");
 
 
+        //rmtrack command
+        shell_exec("sudo apt install conntrack -y");
+        shell_exec("sudo cp ". base_path() ."/config/extra/rmtrack /usr/sbin/");
 
 
         //configure dhcp server
@@ -95,9 +108,8 @@ class InitializeCommand extends Command
         shell_exec("sudo echo 'hw_mode=". $hw_mode ."' >> /etc/hostapd/hostapd.conf");
         shell_exec("sudo echo 'channel=". $channel ."' >> /etc/hostapd/hostapd.conf");
 
-        //rmtrack command
-        shell_exec("sudo cp ". base_path() ."/config/extra/rmtrack /usr/sbin/");
 
         shell_exec("sudo systemctl reboot");
     }
 }
+
