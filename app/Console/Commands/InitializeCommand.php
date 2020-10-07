@@ -69,6 +69,7 @@ class InitializeCommand extends Command
         //enable hostapd
         shell_exec("sudo systemctl unmask hostapd");
         shell_exec("sudo systemctl enable hostapd");
+        shell_exec("sudo bash -c \"echo 'DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"' >> /etc/default/hostapd\"");
 
         //install dnsmasq
         shell_exec("sudo apt install dnsmasq -y");
@@ -105,6 +106,7 @@ class InitializeCommand extends Command
         shell_exec("sudo rfkill unblock wlan");
 
 
+        shell_exec("sudo bash -c \"echo 'interface=". $interface ."' >> /etc/hostapd/hostapd.conf\"");
         shell_exec("sudo bash -c \"echo 'country_code=". $country_code ."' >> /etc/hostapd/hostapd.conf\"");
         shell_exec("sudo bash -c \"echo 'driver=". $driver ."' >> /etc/hostapd/hostapd.conf\"");
         shell_exec("sudo bash -c \"echo 'ssid=". $ssid ."' >> /etc/hostapd/hostapd.conf\"");
