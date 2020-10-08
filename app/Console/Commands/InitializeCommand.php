@@ -50,7 +50,8 @@ class InitializeCommand extends Command
 
         //symlink connect to portal
         shell_exec("sudo ln -s /var/www/portal ". base_path());
-        shell_exec("sudo chown -R www-data:www-data " . storage_path());
+        shell_exec("sudo chown -R www-data:www-data " . base_path() ."/storage");
+        shell_exec("sudo chown -R www-data:www-data " . base_path() ."/database");
         shell_exec("sudo usermod -a -G www-data " . $user);
 
         //cron task
@@ -93,7 +94,7 @@ class InitializeCommand extends Command
         shell_exec("sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
 
         shell_exec("sudo iptables -N internet -t mangle");
-        shell_exec("sudo iptables -t mangle -A PREROUTING -i wlan0 -j internet"):
+        shell_exec("sudo iptables -t mangle -A PREROUTING -i wlan0 -j internet");
         shell_exec("sudo iptables -t mangle -A internet -j MARK --set-mark 99");
         shell_exec("sudo iptables -t nat -A PREROUTING -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1");
         shell_exec("sudo iptables -t filter -A FORWARD -m mark --mark 99 -j DROP");
