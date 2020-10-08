@@ -88,7 +88,9 @@ class InitializeCommand extends Command
 
         //test marks
         shell_exec("sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
+
         shell_exec("sudo iptables -N internet -t mangle");
+        shell_exec("sudo iptables -t mangle -A PREROUTING -i wlan0 -j internet"):
         shell_exec("sudo iptables -t mangle -A internet -j MARK --set-mark 99");
         shell_exec("sudo iptables -t nat -A PREROUTING -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1");
         shell_exec("sudo iptables -t filter -A FORWARD -m mark --mark 99 -j DROP");
@@ -104,6 +106,7 @@ class InitializeCommand extends Command
         //configure dhcp server
         shell_exec("sudo bash -c \"echo 'interface=". $interface . "' >> /etc/dnsmasq.conf\"");
         shell_exec("sudo bash -c \"echo 'dhcp-range=". $range ."' >> /etc/dnsmasq.conf\"");
+        shell_exec("sudo bash -c \"echo 'address=/portal.host/10.0.0.1' >> /etc/dnsmasq.conf\"");
 
 
         //unblock wlan

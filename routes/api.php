@@ -30,5 +30,5 @@ Route::get('rates', RateController::class);
 Route::get('client', [ClientController::class, 'index']);
 Route::get('update', [ClientController::class, 'update']);
 
-Route::get('start', [CoinLogController::class, 'index']);
+Route::post('start', [CoinLogController::class, 'index']);
 Route::post('submit', [CoinLogController::class, 'update']);
