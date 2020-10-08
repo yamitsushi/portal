@@ -37,6 +37,7 @@ class InitializeCommand extends Command
      */
     public function handle()
     {
+        $user="pi";
         $interface="wlan0";
         $ipv4="10.0.0.1/20";
         $range="10.0.0.11, 10.0.15.250 ,255.255.240.0,24h";
@@ -49,6 +50,8 @@ class InitializeCommand extends Command
 
         //symlink connect to portal
         shell_exec("sudo ln -s /var/www/portal ". base_path());
+        shell_exec("sudo chown -R www-data:www-data " . storage_path());
+        shell_exec("sudo usermod -a -G www-data " . $user);
 
         //cron task
         shell_exec("(crontab -l ; echo \"* * * * * cd /var/www/portal && php artisan schedule:run >> /dev/null 2>&1\") | crontab -");
