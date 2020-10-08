@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
   <link
-      href="{{ asset("css/materialdesignicons/materialdesignicons.min.css"); }}"
+      href="{{ asset("css/materialdesignicons/materialdesignicons.min.css") }}"
       rel="stylesheet"
   />
 </head>
