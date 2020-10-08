@@ -49,7 +49,7 @@ class InitializeCommand extends Command
 
 
         //symlink connect to portal
-        shell_exec("sudo ln -s /var/www/portal ". base_path());
+        shell_exec("sudo ln -s ". base_path() ."/var/www/portal ");
         shell_exec("sudo chown -R www-data:www-data " . base_path() ."/storage");
         shell_exec("sudo chown -R www-data:www-data " . base_path() ."/database");
         shell_exec("sudo usermod -a -G www-data " . $user);
@@ -74,7 +74,7 @@ class InitializeCommand extends Command
         //enable hostapd
         shell_exec("sudo systemctl unmask hostapd");
         shell_exec("sudo systemctl enable hostapd");
-        shell_exec("sudo bash -c \"echo 'DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"' >> /etc/default/hostapd\"");
+        shell_exec("sudo bash -c \"echo 'DAEMON_CONF=\\\"/etc/hostapd/hostapd.conf\\\"' >> /etc/default/hostapd\"");
 
         //install dnsmasq
         shell_exec("sudo apt install dnsmasq -y");
